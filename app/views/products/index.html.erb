@@ -1,0 +1,41 @@
+<h1>Welcome <%= current_user.first_name.titleize %> <%= current_user.last_name.titleize %></h1>
+
+<a href='/logout/<%= current_user.id %>' data-method='delete'>Logout</a><br>
+<a href='/users'>Go to Dashboard</a><br>
+<hr>
+
+
+<h1>All Products:</h1>
+<table class="table">
+   <thead>
+      <tr>
+         <th>Product</th>
+         <th>Seller</th>
+         <th>Date Posted</th>
+         <th>Amount</th>
+         <th>Action</th>
+      </tr>
+   </thead>
+   <tbody>
+      <% @products.each do |product| %>
+         <% unless product.users.include?(current_user)%>
+            <tr>
+               <td><%= product.item_name %></td>
+               <td><%= product.user.first_name.titleize %></td>
+               <td><%= product.created_at %></td>
+               <td>$<%= product.cost %></td>
+               <td>
+                  <% if product.user != current_user %>
+                     <% unless product.users.include?(current_user)%>
+                        <form action="/buy/<%= product.id %>" method='post'>
+                           <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+                           <input type='submit' value='Buy'>
+                        </form>
+                     <% end %>
+                  <% end %>
+               </td>
+            </tr>
+         <% end %>
+      <% end %>
+   </tbody>
+</table>
